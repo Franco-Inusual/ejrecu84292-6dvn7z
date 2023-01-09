@@ -1,0 +1,73 @@
+<div class="tituloPagina">
+{{ Titulo }}
+</div>
+<div class="containter-fluid">
+  <div class="row justify-content-center">
+    <div class="col-6 offset 3">
+      <input name="file" class="form-control" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" (change)="onChange($event)"/>
+      <hr />
+    </div>
+  </div>
+  <div class="row justify-content-center botones">
+    <div class="col-3 offset-2" *ngIf="file!=null">
+      <button type="button" class="btn btn-primary" (click)="onUpload()">
+        Subir Lote
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Shareable short link of  uploaded file -->
+<div class="container text-center jumbotron" *ngIf="shortLink">
+  <h2>Visit Here</h2>
+  <a href="{{ shortLink }}">{{ shortLink }}</a>
+</div>
+
+<!--Flag variable is used here-->
+<!-- <div class="container" *ngIf="loading">
+  <h3>Loading ...</h3>
+</div> -->
+<hr />
+<!-- Tabla de resutados de busqueda y Paginador-->
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' && Items?.length > 0">
+  <table class="table table-hover table-sm table-bordered table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">#</th>
+        <th class="text-center">Mail</th>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">Accion</th>
+        <th class="text-center">Lote</th>
+        <th class="text-center">Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let Item of Items">
+        <td class="text-center">{{ Item.eventosId }}</td>
+        <td class="text-center">{{ Item.destinatario }}</td>
+        <td class="text-center">
+          {{ Item.nombreDestinatario }}
+        </td>
+        <td class="text-center">{{ Item.accionId }}</td>
+        <td class="text-center">{{ Item.loteId }}</td>
+        <td class="text-center">{{ Item.fechaEstado }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--No se encontraron registros-->
+<div
+  class="alert alert-info mensajesAlert"
+  *ngIf="AccionABMC == 'L' && Items?.length == 0 && loading "
+>
+  <i class="fa fa-exclamation-sign"></i>{{ Mensajes['SD'] }}
+  <!-- texto: No se encontraron registros -->
+</div>
+<div class="container">
+<h3>{{successMessage}}</h3>
+</div>
+<div class="container">
+<h3>{{errorMessage}}</h3>
+</div>

@@ -1,0 +1,380 @@
+<div class="tituloPagina">
+  {{ Titulo }} <small>{{ TituloAccionABMC[AccionABMC] }}</small>
+</div>
+
+<!-- Formulario Filtro de busqueda, se ve cuando la accion es Listado(busqueda/listado)-->
+<form name="FormBusqueda" [formGroup]="FormBusqueda" *ngIf="AccionABMC == 'L'">
+  <div class="container-fluid">
+    <hr />
+
+    <!-- Botones -->
+    <div class="row justify-content-center botones">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="Pagina = 1; Buscar()"
+      >
+        <i class="fa fa-search"> </i> Buscar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="Agregar()">
+        <i class="fa fa-plus"> </i>
+        Agregar
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- Tabla de resutados de busqueda y Paginador-->
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' && Items?.length > 0">
+  <table class="table table-hover table-sm table-bordered table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">#</th>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">Asunto</th>
+        <th class="text-center">CC</th>
+        <th class="text-center">CCo</th>
+        <th class="text-center">Activa</th>
+        <th class="text-center">Opciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let Item of Items"
+        [ngClass]="{ 'table-danger': !Item.accionActiva }"
+      >
+        <td>{{ Item.accionId }}</td>
+        <td class="text-center">{{ Item.accionNombre | uppercase }}</td>
+        <td class="text-center">
+          {{ Item.accionAsunto }}
+        </td>
+        <td class="text-center">{{ Item.accionCc }}</td>
+        <td class="text-center">{{ Item.accionCco }}</td>
+        <td class="text-center">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-{{
+              !Item.accionActiva ? 'danger' : 'success'
+            }}"
+            title="{{ Item.accionActiva ? 'Desactivar' : 'Activar' }}"
+            (click)="ActivarDesactivar(Item)"
+          >
+            <i class="fa fa-{{ !Item.accionActiva ? 'times' : 'check' }}"></i>
+          </button>
+        </td>
+        <td class="text-center text-nowrap">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            title="Consultar"
+            (click)="Consultar(Item)"
+          >
+            <i class="fa fa-eye"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            title="Modificar"
+            (click)="Modificar(Item)"
+          >
+            <i class="fa fa-pencil"></i>
+          </button>
+          <button
+            *ngIf="Item.accionActiva"
+            type="button"
+            class="btn btn-sm btn-outline-success"
+            title="Ejecutar"
+            (click)="Ejecutar(Item)"
+          >
+            <i class="fa fa-play"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--No se encontraron registros-->
+<div
+  class="alert alert-info mensajesAlert"
+  *ngIf="AccionABMC == 'L' && Items?.length == 0"
+>
+  <i class="fa fa-exclamation-sign"></i>{{ Mensajes['SD'] }}
+  <!-- texto: No se encontraron registros -->
+</div>
+
+<!-- Tabla de resutados de envioMail y Paginador-->
+<div class="tituloPagina" *ngIf="AccionEjecutada != null">
+  <small>Resultados Acción "{{AccionEjecutada.accionNombre}}":</small>
+</div>
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' && Eventos?.length > 0">
+  <table
+    class="table table-hover table-sm table-bordered table-striped table-dark"
+  >
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">#</th>
+        <th class="text-center">Mail</th>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">Accion</th>
+        <th class="text-center">Lote</th>
+        <th class="text-center">Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let Item of Eventos">
+        <td>{{ Item.eventosId }}</td>
+        <td class="text-center">{{ Item.destinatario }}</td>
+        <td class="text-center">
+          {{ Item.nombreDestinatario }}
+        </td>
+        <td class="text-center">{{ Item.accionId }}</td>
+        <td class="text-center">{{ Item.loteId }}</td>
+        <td class="text-center">{{ Item.fechaEstado }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--No se encontraron registros-->
+<div
+  class="alert alert-info mensajesAlert"
+  *ngIf="AccionABMC == 'L' && Eventos?.length == 0"
+>
+  <i class="fa fa-exclamation-sign"></i>{{ Mensajes['SD'] }}
+  <!-- texto: No se encontraron registros -->
+</div>
+
+<!-- Registro en Alta,Modificacion y Consulta -->
+<form name="FormRegistro" [formGroup]="FormRegistro" *ngIf="AccionABMC != 'L'">
+  <fieldset [disabled]="AccionABMC === 'C'">
+    <!--campo nombre-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="accionNombre"
+          >Nombre<span class="text-danger">*</span>:</label
+        >
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          type="text"
+          class="form-control"
+          formControlName="accionNombre"
+          [ngClass]="{
+            'is-invalid':
+              (FormRegistro.controls['accionNombre'].touched || submitted) &&
+              FormRegistro.controls['accionNombre'].errors
+          }"
+        />
+
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['accionNombre'].touched || submitted) &&
+            FormRegistro.controls['accionNombre'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['accionNombre'].touched || submitted) &&
+            (FormRegistro.controls['accionNombre'].hasError('minlength') ||
+              FormRegistro.controls['accionNombre'].hasError('maxlength'))
+          "
+        >
+          Dato texto, 4 a 55 caracteres.
+        </div>
+      </div>
+    </div>
+
+    <!--campo Asunto-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="accionAsunto">
+          Asunto<span class="text-danger">*</span>:
+        </label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          type="text"
+          name="accionAsunto"
+          class="form-control"
+          formControlName="accionAsunto"
+          [ngClass]="{
+            'is-invalid':
+              (FormRegistro.controls['accionAsunto'].touched || submitted) &&
+              FormRegistro.controls['accionAsunto'].errors
+          }"
+        />
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['accionAsunto'].touched || submitted) &&
+            FormRegistro.controls['accionAsunto'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['accionAsunto'].touched || submitted) &&
+            (FormRegistro.controls['accionAsunto'].hasError('minlength') ||
+              FormRegistro.controls['accionAsunto'].hasError('maxlength'))
+          "
+        >
+          Dato texto, 4 a 55 caracteres.
+        </div>
+      </div>
+    </div>
+
+    <!--campo CC-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label"
+          >CC<span class="text-danger">*</span>:
+        </label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          class="form-control"
+          formControlName="accionCc"
+          name="accionCc"
+          [ngClass]="{
+            'is-invalid':
+              (FormRegistro.controls['accionCc'].touched || submitted) &&
+              FormRegistro.controls['accionCc'].errors
+          }"
+        />
+      </div>
+    </div>
+    <!--campo CCo-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label"
+          >CCo<span class="text-danger">*</span>:
+        </label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          class="form-control"
+          formControlName="accionCco"
+          name="accionCco"
+          [ngClass]="{
+            'is-invalid':
+              (FormRegistro.controls['accionCco'].touched || submitted) &&
+              FormRegistro.controls['accionCco'].errors
+          }"
+        />
+
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['accionCco'].touched || submitted) &&
+            FormRegistro.controls['accionCco'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+      </div>
+    </div>
+    <!--campo activo-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="accionActiva">Activo:</label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <!-- ref?? disabled html no fucniona en reactive forms? -->
+        <select
+          class="form-control"
+          name="accionActiva"
+          formControlName="accionActiva"
+          [disabled]="true"
+        >
+          <option *ngFor="let opt of OpcionesActivo" [ngValue]="opt.Id">
+            ‌{{ opt.Nombre }}
+          </option>
+        </select>
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['accionActiva'].touched || submitted) &&
+            FormRegistro.controls['accionActiva'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+      </div>
+    </div>
+    <div class="col-10 offset-1">
+      <editor
+        (ngModelChange)="setEditorContent($event)"
+        formControlName="accionCuerpo"
+        [(ngModel)]="content"
+        apiKey="mn467wh7mhwmtiwg9jxhxvzp082vwq1bjrw0kl7xriv233ss"
+        [init]="{
+          height: 500,
+          plugins: [
+            'a11ychecker',
+            'advlist',
+            'advcode',
+            'advtable',
+            'autolink',
+            'checklist',
+            'export',
+            'lists',
+            'link',
+            'image',
+            'charmap',
+            'preview',
+            'anchor',
+            'searchreplace',
+            'visualblocks',
+            'powerpaste',
+            'fullscreen',
+            'formatpainter',
+            'insertdatetime',
+            'media',
+            'table',
+            'help',
+            'wordcount'
+          ],
+          fullscreen_native: true,
+          toolbar:
+            'undo redo | casechange blocks | bold italic backcolor | \
+ alignleft aligncenter alignright alignjustify | \
+ bullist numlist checklist outdent indent | removeformat |  a11ycheck code table help'
+        }"
+        initialValue="Escriba el cuerpo de su mail aquí"
+      ></editor>
+
+      <!-- <section [innerHTML]="content"></section> -->
+    </div>
+  </fieldset>
+  <!-- Botones Grabar, Cancelar/Volver' -->
+  <hr />
+  <div class="row justify-content-center botones">
+    <button
+      type="button"
+      *ngIf="AccionABMC !== 'C'"
+      class="btn btn-primary"
+      (click)="Grabar()"
+    >
+      <i class="fa fa-check"></i> Grabar
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-warning" (click)="Volver()">
+      <i class="fa fa-undo"></i> {{ AccionABMC == 'C' ? 'Volver' : 'Cancelar' }}
+    </button>
+  </div>
+
+  <!--texto: Revisar los datos ingresados...-->
+  <div
+    *ngIf="submitted && FormRegistro.invalid"
+    class="row alert alert-danger mensajesAlert"
+  >
+    <i class="fa fa-exclamation-sign"></i>{{ Mensajes['RD'] }}
+  </div>
+</form>

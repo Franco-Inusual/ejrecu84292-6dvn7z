@@ -1,0 +1,363 @@
+<div class="tituloPagina">
+  {{ Titulo }} <small>{{ TituloAccionABMC[AccionABMC] }}</small>
+</div>
+
+<!-- Section: Design Block -->
+<section class="" *ngIf="AccionABMC == 'I'">
+  <!-- Jumbotron -->
+  <div
+    class="px-4 py-5 px-md-5 text-center text-lg-start"
+    style="background-color: hsl(0, 0%, 96%)"
+  >
+    <div class="container">
+      <div class="row gx-lg-5 align-items-center">
+        <div class="col-lg-6 mb-5 mb-lg-0">
+          <h1 class="my-5 display-3 fw-bold ls-tight">
+            The best offer <br />
+            <span class="text-primary">for your business</span>
+          </h1>
+          <p style="color: hsl(217, 10%, 50.8%)">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet,
+            itaque accusantium odio, soluta, corrupti aliquam quibusdam tempora
+            at cupiditate quis eum maiores libero veritatis? Dicta facilis sint
+            aliquid ipsum atque?
+          </p>
+        </div>
+
+        <div class="col-lg-6 mb-5 mb-lg-0">
+          <div class="card">
+            <div class="card-body py-5 px-md-5">
+              <form [formGroup]="FormLogin">
+                <!-- 2 column grid layout with text inputs for the first and last names -->
+
+                <!-- Host input -->
+                <div class="form-outline mb-4">
+                  <select
+                    class="form-control"
+                    name="Activo"
+                    formControlName="host"
+                  >
+                    <option *ngFor="let opt of OpcionesHost" [ngValue]="opt.Id">
+                      ‌{{ opt.Nombre }}
+                    </option>
+                  </select>
+                  <label class="form-label" for="host"
+                    >Servidor de Correo</label
+                  >
+                </div>
+                <!-- Email input -->
+                <div class="form-outline mb-4">
+                  <input
+                    type="email"
+                    id="userMail"
+                    class="form-control"
+                    formControlName="userMail"
+                    [ngClass]="{
+                      'is-invalid':
+                        (FormLogin.controls['userMail'].touched || submitted) &&
+                        FormLogin.controls['userMail'].errors
+                    }"
+                    [(ngModel)]="UserMail"
+                  />
+                  <label class="form-label" for="userMail"
+                    >Dirección de Correo</label
+                  >
+                  <div
+                    class="validacion"
+                    *ngIf="
+                      (FormLogin.controls['userMail'].touched || submitted) &&
+                      FormLogin.controls['userMail'].hasError('required')
+                    "
+                  >
+                    Dato requerido.
+                  </div>
+                  <div
+                    class="validacion"
+                    *ngIf="
+                      (FormLogin.controls['userMail'].touched || submitted) &&
+                      (FormLogin.controls['userMail'].hasError('minlength') ||
+                        FormLogin.controls['userMail'].hasError('maxlength'))
+                    "
+                  >
+                    Dato texto, 4 a 55 caracteres.
+                  </div>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline mb-4">
+                  <input
+                    type="password"
+                    id="userPassword"
+                    class="form-control"
+                    formControlName="userPassword"
+                    [ngClass]="{
+                      'is-invalid':
+                        (FormLogin.controls['userPassword'].touched ||
+                          submitted) &&
+                        FormLogin.controls['userPassword'].errors
+                    }"
+                    [(ngModel)]="UserPassword"
+                  />
+                  <label class="form-label" for="userPassword"
+                    >Contraseña</label
+                  >
+                  <div
+                    class="validacion"
+                    *ngIf="
+                      (FormLogin.controls['userPassword'].touched ||
+                        submitted) &&
+                      FormLogin.controls['userPassword'].hasError('required')
+                    "
+                  >
+                    Dato requerido.
+                  </div>
+                </div>
+
+                <!-- Submit button -->
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-block mb-4"
+                  (click)="Conectar()"
+                >
+                  Conectar
+                </button>
+                <div class="validacion" *ngIf="ConexionFallida == true">
+                  No se pudo conectar, revise sus datos.
+                </div>
+
+                <!-- Register buttons -->
+                <div class="text-center">
+                  <p>or sign up with:</p>
+                  <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fa fa-facebook-f"></i>
+                  </button>
+
+                  <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fa fa-google"></i>
+                  </button>
+
+                  <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fa fa-twitter"></i>
+                  </button>
+
+                  <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fa fa-github"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Jumbotron -->
+</section>
+<!-- Section: Design Block -->
+
+<!-- Formulario Filtro de busqueda, se ve cuando la accion es Listado(busqueda/listado)-->
+<form name="FormBusqueda" [formGroup]="FormBusqueda" *ngIf="AccionABMC == 'L'">
+  <div class="container-fluid">
+    <hr />
+
+    <!-- Botones -->
+    <div class="row justify-content-center botones">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="Pagina = 1; Buscar()"
+      >
+        <i class="fa fa-search"> </i> Consultar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="Enviar()">
+        <i class="fa fa-envelope"> </i>
+        Enviar
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- === File Upload ===
+Design a file upload element. Is it the loading screen and icon? A progress element? Are folders being uploaded by flying across the screen like Ghostbusters? ;)  
+-->
+
+<!-- Tabla de resutados de busqueda y Paginador-->
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' && Items?.length > 0">
+  <table class="table table-hover table-sm table-bordered table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">Mail</th>
+        <th class="text-center">Fecha</th>
+        <th class="text-center">Respondido</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let Item of Items"
+        [ngClass]="{ 'table-danger': !Item.respondido }"
+      >
+        <td>{{ Item.mail }}</td>
+        <td>{{ Item.fecha }}</td>
+        <td>{{ Item.respondido ? 'SI' : 'NO' }}</td>
+        <!-- <td class="text-center text-nowrap">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary"
+          title="Consultar"
+          (click)="Consultar(Item)"
+        >
+          <i class="fa fa-eye"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary"
+          title="Modificar"
+          (click)="Modificar(Item)"
+        >
+          <i class="fa fa-pencil"></i>
+        </button>
+      </td> -->
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--No se encontraron registros-->
+<div
+  class="alert alert-info mensajesAlert"
+  *ngIf="AccionABMC == 'L' && Items?.length == 0"
+>
+  <i class="fa fa-exclamation-sign"></i>{{ Mensajes['SD'] }}
+  <!-- texto: No se encontraron registros -->
+</div>
+
+<!-- Registro en Alta,Modificacion y Consulta -->
+<form
+  name="FormRegistro"
+  [formGroup]="FormRegistro"
+  *ngIf="AccionABMC != 'L' && AccionABMC != 'I' && AccionABMC != 'E'"
+>
+  <fieldset [disabled]="AccionABMC === 'C'">
+    <!--campo mail-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="Mail"
+          >Mail<span class="text-danger">*</span>:</label
+        >
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          type="text"
+          class="form-control"
+          formControlName="mail"
+          [ngClass]="{
+            'is-invalid':
+              (FormRegistro.controls['mail'].touched || submitted) &&
+              FormRegistro.controls['mail'].errors
+          }"
+        />
+
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['mail'].touched || submitted) &&
+            FormRegistro.controls['mail'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['mail'].touched || submitted) &&
+            (FormRegistro.controls['mail'].hasError('minlength') ||
+              FormRegistro.controls['mail'].hasError('maxlength'))
+          "
+        >
+          Dato texto, 4 a 55 caracteres.
+        </div>
+      </div>
+    </div>
+
+    <!--campo fecha-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label" for="fecha">
+          Fecha<span class="text-danger">*</span>:
+        </label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          type="text"
+          name="fecha"
+          class="form-control"
+          formControlName="fecha"
+          [ngClass]="{
+            'is-invalid':
+              (FormRegistro.controls['fecha'].touched || submitted) &&
+              FormRegistro.controls['fecha'].errors
+          }"
+        />
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['fecha'].touched || submitted) &&
+            FormRegistro.controls['fecha'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+      </div>
+    </div>
+
+    <!--campo respondido-->
+    <div class="row">
+      <div class="col-sm-4 col-md-3 offset-md-1">
+        <label class="col-form-label"
+          >Respondido<span class="text-danger">*</span>:
+        </label>
+      </div>
+      <div class="col-sm-8 col-md-6">
+        <input
+          class="form-control"
+          formControlName="respondido"
+          name="respondido"
+          [ngClass]="{
+            'is-invalid':
+              (FormRegistro.controls['respondido'].touched || submitted) &&
+              FormRegistro.controls['respondido'].errors
+          }"
+        />
+
+        <div
+          class="validacion"
+          *ngIf="
+            (FormRegistro.controls['respondido'].touched || submitted) &&
+            FormRegistro.controls['respondido'].hasError('required')
+          "
+        >
+          Dato requerido.
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <!-- Botones Grabar, Cancelar/Volver' -->
+  <hr />
+  <div class="row justify-content-center botones">
+    <button type="button" *ngIf="AccionABMC !== 'C'" class="btn btn-primary">
+      <i class="fa fa-check"></i> Grabar
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-warning" (click)="Volver()">
+      <i class="fa fa-undo"></i> {{ AccionABMC == 'C' ? 'Volver' : 'Cancelar' }}
+    </button>
+  </div>
+
+  <!--texto: Revisar los datos ingresados...-->
+  <div
+    *ngIf="submitted && FormRegistro.invalid"
+    class="row alert alert-danger mensajesAlert"
+  >
+    <i class="fa fa-exclamation-sign"></i>{{ Mensajes['RD'] }}
+  </div>
+</form>

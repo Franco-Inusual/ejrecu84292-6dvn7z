@@ -1,0 +1,75 @@
+<div class="container-fluid">
+  <div class="row" style="background-color: rgba(64, 81, 132, 0.3)">
+    <!-- <div class="col-6">
+    <ngx-codemirror
+      (ngModelChange)="setEditorContent($event)"
+      [(ngModel)]="content"
+      [options]="{
+        lineNumbers: true,
+        theme: 'material',
+        mode: 'markdown',
+        autoCloseBrackets: true,
+        matchBrackets: true,
+        lint: true,
+        smartIndent: true
+      }"
+    >
+    </ngx-codemirror>
+  </div> -->
+    <div class="col-10 offset-1">
+      <editor
+        (ngModelChange)="setEditorContent($event)"
+        [(ngModel)]="content"
+        apiKey="mn467wh7mhwmtiwg9jxhxvzp082vwq1bjrw0kl7xriv233ss"
+        [init]="{
+          height: 800,
+          plugins: [
+            'a11ychecker',
+            'advlist',
+            'advcode',
+            'advtable',
+            'autolink',
+            'checklist',
+            'export',
+            'lists',
+            'link',
+            'image',
+            'charmap',
+            'preview',
+            'anchor',
+            'searchreplace',
+            'visualblocks',
+            'powerpaste',
+            'fullscreen',
+            'formatpainter',
+            'insertdatetime',
+            'media',
+            'table',
+            'help',
+            'wordcount'
+          ],
+          fullscreen_native: true,
+          toolbar:
+            'undo redo | casechange blocks | bold italic backcolor | \
+     alignleft aligncenter alignright alignjustify | \
+     bullist numlist checklist outdent indent | removeformat |  a11ycheck code table help'
+        }"
+        initialValue="Welcome to TinyMCE Angular"
+      ></editor>
+
+      <!-- <section [innerHTML]="content"></section> -->
+    </div>
+  </div>
+  <div class="row justify-content-center botones">
+    <button type="button" class="btn btn-primary" (click)="Enviar()">
+      <i class="fa fa-envelope"> </i>
+      Enviar
+    </button>
+  </div>
+  <!-- <div class="col-12">
+    <textarea type="text" [(ngModel)]="contenido"></textarea>
+  </div>-->
+  <!-- <div class="col-12">
+    <section [innerHTML]="content"></section>
+  </div>  -->
+</div>
